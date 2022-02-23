@@ -416,8 +416,10 @@
 <!--底部结束-->
 </body>
 <script>
-	$("#login_reg").hide();
-	$("#welcome").text(localStorage.getItem("message"));
+	if(localStorage.getItem("message")!=null){
+		$("#login_reg").hide();
+		$("#welcome").text(localStorage.getItem("message"));
+	}
 </script>
 </html>
 /*over*/

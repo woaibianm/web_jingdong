@@ -19,19 +19,19 @@
             <form id="form-register" name="register">
                <div class="form-group">
                   <label for="uname">用户名:</label>
-                  <input name="Username" id="uname"  minlength="6" maxlength="9" autofocus required type="text"/>
+                  <input name="Username" id="Username"  minlength="6" maxlength="9" autofocus required type="text"/>
                   <span  class="bg-default help-block">用户名可包含数字或字母</span>
                </div>
 
 
                <div class="form-group">
                   <label for="upwd">密&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
-                  <input name="Password" id="upwd" type="password" minlength="6" autofocus required/>
+                  <input name="Password" id="Password" type="password" minlength="6" autofocus required/>
                   <span id="upwd-msg" class="bg-default help-block">密码长度在6~12位之间</span>
                </div>
                <div class="form-group">
                   <label for="email">邮&nbsp;&nbsp;&nbsp;&nbsp;箱:</label>
-                  <input name="Email" id="email" type="email" autofocus/>
+                  <input name="Email" id="Email" type="email" autofocus/>
                   <span id="email-msg" class="bg-default help-block">请输入合法邮箱格式</span>
                </div>
 			   <div class="form-group">
@@ -50,7 +50,7 @@
                   <span id="birthday-msg"  class="bg-default help-block" >请选择生日</span>
                </div>
                <div class="form-group btn-group">
-                  <button class="btn btn-success" style="margin-right:43px;margin-bottom:6px" type="button" id="btn-submit" >提交信息</button>
+                  <button class="btn btn-success" onclick="submitForm()" style="margin-right:43px;margin-bottom:6px" type="button" id="btn-submit" >提交信息</button>
                   <button  style="width:100px" class="btn btn-danger" id="resetButton" >清空输入</button>
                </div>
             </form>
@@ -68,35 +68,46 @@
 </body>
 
 
-<script  language="text/javascript">
+<script>
 var url=baseURl+'/redholiday/user/regist';
-	$("#btn-submit").click(function(){
-		$.ajax({
-		url:url,
-		type:'post',
-		data:$("#form-register").serialize(),
-		success: function(data){
-		
-			console.log(data.message);
-			var message=JSON.stringify(data.message)
-			if(message.search("注册成功")!=-1){
-				$("#form-register").hide();
-				$("#regSuccess").show();
-			}else{
-				alert(data.message);
-			}
-		},
-		error:function(){
-		}
-		
-		})
-	})
+	function GetXhr(){
+        var xhr=null;
+        if(window.XMLHttpRequest){
+            xhr=new XMLHttpRequest();
+        }else{
+            xhr=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        return xhr;
+    }
 	
 	$("#resetButton").click(function(){
 		$("#form-register")[0].reset();
 	})
 	
-	
+	var submitForm =function (){
+	    var Username=document.getElementById("Username").value;
+		var Password=document.getElementById("Password").value;	
+		var Email=document.getElementById("Email").value;
+		var Phone=document.getElementById("Phone").value;
+		var xmlHttp = GetXhr();
+			xmlHttp.open("POST",url, true);
+			xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+			xmlHttp.send("Username="+Username+"&"+"Password="+Password+"&"+"Email="+Email+"&"+"Phone="+Phone);
+			console.log(xmlHttp);
+			//4.准备一个事件处理回来的内容
+			xmlHttp.onreadystatechange = function(){
+			if(xmlHttp.readyState == 4 && xmlHttp.status ==200){
+				var result = xmlHttp.response;
+				result=JSON.parse(result)
+				if(result.message.search("注册成功")!=-1){
+					$("#form-register").hide();
+					$("#regSuccess").show();
+				}else{
+					alert(result.message);
+				}
+			}
+			}
+	}
 </script>
 </html>
 /*over*/

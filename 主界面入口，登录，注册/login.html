@@ -47,16 +47,16 @@
                 <div class="inputs">
                     <form action="#" id="loginForm" method="post">
                         <!--用户名正则，4到16位（字母，数字，下划线，减号）-->
-                        <label for="user"><input type="text" name="Username" class="public user" id="user" ></label>
+                        <label for="user"><input type="text" name="Username" class="public user" id="Username" ></label>
                         <!--密码强度正则，最少6位，包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符-->
-                        <label for="pwd"><input type="password" name="Password" class="public pwd" id="pwd" ></label>
+                        <label for="pwd"><input type="password" name="Password" class="public pwd" id="Password" ></label>
                         <span class="user_img"></span>
                         <span class="pwd_img"></span>
                         <a href="#">忘记密码</a>
                        
                        
                     </form>
-					 <button class="btn" id="btn-submit" >登录</button>
+					 <button class="btn" id="btn-submit" onclick="submitForm()" >登录</button>
                 </div>
             </div>
             <div class="bottom">
@@ -95,24 +95,45 @@
 <!--尾部结束-->
 </body>
 <script>
+function GetXhr(){
+        var xhr=null;
+        if(window.XMLHttpRequest){
+            xhr=new XMLHttpRequest();
+        }else{
+            xhr=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        return xhr;
+    }
 var url=baseURl+'/redholiday/user/login/pw';
+var myFormData = new FormData();
 
-	$("#btn-submit").click(function(){
-		$.ajax({
-		url:url,
-		type:'post',
-		data:$("#loginForm").serialize(),
-		success: function(data){
-			if(data.code==2000){
-				localStorage.setItem("token",data.data.token)
-				localStorage.setItem("message",data.message)
-				window.location.href="index.html"
-			}
-		},
-		error:function(){
-		}
+
+	var submitForm =function (){
+	    var Username=document.getElementById("Username").value;
+		var Password=document.getElementById("Password").value;	
+		myFormData.Username=Username;
+		myFormData.Password=Password;
+		var xmlHttp = GetXhr();
+			xmlHttp.open("POST",url, true);
+			xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+			xmlHttp.send("Username="+Username+"&"+"Password="+Password );
 		
-		})
-	})
+			console.log(xmlHttp);
+			//4.准备一个事件处理回来的内容
+			xmlHttp.onreadystatechange = function(){
+			if(xmlHttp.readyState == 4 && xmlHttp.status ==200){
+				var result = xmlHttp.response;
+				result=JSON.parse(result)
+				if(result.code==2000){
+					localStorage.setItem("token",result.data.token)
+					localStorage.setItem("message",result.message)
+					window.location.href="index.html"
+				}else{
+					alert(result.message);
+				}
+			}
+	}
+	
+}
 </script>
 </html>
